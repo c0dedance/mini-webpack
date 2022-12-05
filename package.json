@@ -1,0 +1,27 @@
+{
+  "name": "mini-webpack",
+  "type": "module",
+  "version": "0.0.1",
+  "description": "",
+  "author": "c0dedance",
+  "license": "MIT",
+  "homepage": "https://github.com/c0dedance/mini-webpack#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/c0dedance/mini-webpack"
+  },
+  "keywords": [],
+  "scripts": {
+    "build": "tsc && node src",
+    "lint": "eslint . --fix",
+    "test": "vitest",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@antfu/eslint-config": "^0.27.0",
+    "@types/node": "^18.7.18",
+    "eslint": "^8.23.1",
+    "typescript": "^4.8.3",
+    "vitest": "^0.23.4"
+  }
+}
