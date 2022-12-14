@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    "target": "ES5",
+    "module": "ES2015",
+    "declaration": true,
+    "outDir": "./lib",
+    "strict": true,
+    "lib": ["ES6"]
+  },
+  "include": ["core"],
+  "exclude": ["node_modules", "**/__tests__/*"]
+}
