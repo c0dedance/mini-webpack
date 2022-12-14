@@ -1,6 +1,6 @@
 import { resolve } from 'path'
 
 export default {
-  entry: resolve('main.js'),
+  entry: resolve('./src/main.js'),
   output: resolve('dist'),
 }
