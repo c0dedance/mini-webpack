@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "target": "ES5",
+    "target": "ES2015",
     "module": "ES2015",
     "declaration": true,
     "outDir": "./lib",
@@ -8,5 +8,5 @@
     "lib": ["ES6"]
   },
   "include": ["core"],
-  "exclude": ["node_modules", "**/__tests__/*"]
+  "exclude": ["node_modules", "tests/**/*"]
 }
