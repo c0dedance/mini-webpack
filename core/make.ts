@@ -6,18 +6,22 @@ import { transformFromAst } from '@babel/core'
 
 const traverse = traverseModule.default
 let id = 0
+interface dep {
+  moduleId: number
+  path: string
+}
 interface Assets {
   id: number
   path: string
   source: string
-  deps: string[]
+  deps: dep[]
 }
 interface Module {
   id: number
   code: string
 }
-export function createAssets(absolutePath: string): Assets {
-  const deps: string[] = []
+export function createAssets(absolutePath: string, moduleId = 0): Assets {
+  const deps: dep[] = []
   // 读取文件内容
   const source = readFileSync(absolutePath, {
     encoding: 'utf-8',
@@ -32,7 +36,10 @@ export function createAssets(absolutePath: string): Assets {
     ImportDeclaration({ node }: any) {
       // 收集依赖的路径（相对）
       const path = node.source.value
-      deps.push(path)
+      const moduleId = ++id
+      deps.push({ moduleId, path })
+      // 后续require为 moduleId
+      node.source.value = moduleId
     },
   })
   // 将esm代码转换成cjs
@@ -42,7 +49,7 @@ export function createAssets(absolutePath: string): Assets {
   })
 
   return {
-    id: id++,
+    id: moduleId,
     path: absolutePath,
     source: code,
     deps,
@@ -56,9 +63,9 @@ export function createAssetsGraph(entry: string): Assets[] {
     const { path, deps } = assets
     const dirName = dirname(path)
 
-    deps.forEach((p) => {
-      const path = resolve(dirName, p)
-      const childAssets = createAssets(path)
+    deps.forEach(({ moduleId, path }) => {
+      const absPath = resolve(dirName, path)
+      const childAssets = createAssets(absPath, moduleId)
       assetsGraph.push(childAssets)
     })
   }
@@ -68,6 +75,7 @@ export function createAssetsGraph(entry: string): Assets[] {
 
 export function createModuleGraph(assetsGraph: Assets[]): Module[] {
   const moduleGraph = new Array(assetsGraph.length)
+
   assetsGraph.forEach(({ id, source }) => {
     const code
     = `\
@@ -78,5 +86,6 @@ export function createModuleGraph(assetsGraph: Assets[]): Module[] {
     `
     moduleGraph[id] = code
   })
+
   return moduleGraph
 }
