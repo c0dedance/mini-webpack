@@ -1,29 +1,41 @@
-import { resolve } from 'path'
 import { createAssetsGraph, createModuleGraph } from './make'
+import type { Module } from './make'
+import { emitAssets, render } from './emit'
 
-const ENTRY = resolve('dist')
+import { ENTRY, OUTPUT } from './common'
+
+export interface outputType {
+  path: string
+  filename: string
+}
 interface Config {
   entry?: string
-  output?: string
+  output?: outputType
 }
 
 class Compiler {
   private config
+  private moduleGraph: Module[]
   constructor(config: Config) {
     this.config = config
+    this.moduleGraph = []
   }
 
   run() {
-    const { entry = ENTRY } = this.config
+    const { entry = ENTRY, output = OUTPUT } = this.config
+
     this.buildMoudes(entry)
+    this.emitFile(output)
   }
 
   buildMoudes(entry: string) {
     const assetsGraph = createAssetsGraph(entry)
-    const moduleGraph = createModuleGraph(assetsGraph)
-    console.log(moduleGraph)
+    this.moduleGraph = createModuleGraph(assetsGraph)
+  }
 
-    return []
+  emitFile(output: outputType) {
+    const assets = render(this.moduleGraph)
+    emitAssets(assets, output)
   }
 }
 

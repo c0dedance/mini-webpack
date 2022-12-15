@@ -16,9 +16,8 @@ interface Assets {
   source: string
   deps: dep[]
 }
-interface Module {
-  id: number
-  code: string
+export interface Module {
+  [id: number]: string
 }
 export function createAssets(absolutePath: string, moduleId = 0): Assets {
   const deps: dep[] = []
@@ -69,7 +68,6 @@ export function createAssetsGraph(entry: string): Assets[] {
       assetsGraph.push(childAssets)
     })
   }
-  // todo
   return assetsGraph
 }
 
