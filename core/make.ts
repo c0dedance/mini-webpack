@@ -2,18 +2,19 @@ import { readFileSync } from 'fs'
 import { dirname, resolve } from 'path'
 import { parse } from '@babel/parser'
 import traverseModule from '@babel/traverse'
+import { transformFromAst } from '@babel/core'
 
 const traverse = traverseModule.default
+let id = 0
 interface Assets {
+  id: number
   path: string
   source: string
   deps: string[]
 }
 interface Module {
-  id?: number
-  path?: string
-  source?: string
-  deps?: string[]
+  id: number
+  code: string
 }
 export function createAssets(absolutePath: string): Assets {
   const deps: string[] = []
@@ -34,10 +35,16 @@ export function createAssets(absolutePath: string): Assets {
       deps.push(path)
     },
   })
+  // 将esm代码转换成cjs
+  const { code } = transformFromAst(ast, null, {
+    // 使用@babel/preset-env将代码转为ES5
+    presets: ['env'],
+  })
 
   return {
+    id: id++,
     path: absolutePath,
-    source,
+    source: code,
     deps,
   }
 }
@@ -57,4 +64,19 @@ export function createAssetsGraph(entry: string): Assets[] {
   }
   // todo
   return assetsGraph
+}
+
+export function createModuleGraph(assetsGraph: Assets[]): Module[] {
+  const moduleGraph = new Array(assetsGraph.length)
+  assetsGraph.forEach(({ id, source }) => {
+    const code
+    = `\
+    (function(module, exports, require){
+        ${source}
+      }
+    )
+    `
+    moduleGraph[id] = code
+  })
+  return moduleGraph
 }

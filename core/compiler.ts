@@ -1,5 +1,5 @@
 import { resolve } from 'path'
-import { createAssetsGraph } from './make'
+import { createAssetsGraph, createModuleGraph } from './make'
 
 const ENTRY = resolve('dist')
 interface Config {
@@ -20,7 +20,8 @@ class Compiler {
 
   buildMoudes(entry: string) {
     const assetsGraph = createAssetsGraph(entry)
-    console.log(assetsGraph)
+    const moduleGraph = createModuleGraph(assetsGraph)
+    console.log(moduleGraph)
 
     return []
   }
