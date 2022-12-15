@@ -1,3 +1,7 @@
+import { resolve } from 'path'
+import { createAssetsGraph } from './make'
+
+const ENTRY = resolve('dist')
 interface Config {
   entry?: string
   output?: string
@@ -10,7 +14,15 @@ class Compiler {
   }
 
   run() {
-    console.log(this.config)
+    const { entry = ENTRY } = this.config
+    this.buildMoudes(entry)
+  }
+
+  buildMoudes(entry: string) {
+    const assetsGraph = createAssetsGraph(entry)
+    console.log(assetsGraph)
+
+    return []
   }
 }
 
