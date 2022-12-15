@@ -22,11 +22,16 @@ export function emitAssets(assets: string, { path, filename }: outputType) {
 export function render(modules: Module[]) {
   return `\
   (function (modules) {
+    const moduleCache = {}
+
     function require(id) {
-      const module = {
+      if(moduleCache[id]){
+        return moduleCache[id].exports
+      }
+
+      const module = moduleCache[id] = {
         exports:{}
       }
-      const fn = modules[id]
       modules[id](module, module.exports, require)
       
       return module.exports
